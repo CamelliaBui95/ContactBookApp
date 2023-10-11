@@ -3,6 +3,7 @@ package fr.btn.contactsbook;
 import fr.btn.contactsbook.controllers.ContactController;
 import fr.btn.contactsbook.controllers.ContactNewEditDialogController;
 import fr.btn.contactsbook.controllers.MenuController;
+import fr.btn.contactsbook.dao.ContactDAO;
 import fr.btn.contactsbook.model.Person;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -16,29 +17,21 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class ContactsBookApp extends Application {
+    private static final String APP_NAME = "Contact Book Application";
     private Stage primaryStage;
     private BorderPane mainWindow;
-    private ObservableList<Person> contacts = FXCollections.observableArrayList();
+    private ObservableList<Person> contactList;
     private File contactFile;
+    private ContactDAO contactDAO;
     public ContactsBookApp() {
-        contacts.add(new Person("Hans", "Muster"));
-        contacts.add(new Person("Ruth", "Mueller"));
-        contacts.add(new Person("Heinz", "Kurz"));
-        contacts.add(new Person("Cornelia", "Meier"));
-        contacts.add(new Person("Werner", "Meyer"));
-        contacts.add(new Person("Lydia", "Kunz"));
-        contacts.add(new Person("Anna", "Best"));
-        contacts.add(new Person("Stefan", "Meier"));
-        contacts.add(new Person("Martin", "Mueller"));
+
     }
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Contact Book Application");
+        this.primaryStage.setTitle(APP_NAME);
 
         initMainWindow();
     }
@@ -68,9 +61,10 @@ public class ContactsBookApp extends Application {
             AnchorPane contactsView = (AnchorPane) loader.load();
             ContactController controller = loader.getController();
 
-            controller.setContactList(contacts);
             controller.setContactsBookApp(this);
+            controller.setContactList(this.contactList);
 
+            this.primaryStage.setTitle(APP_NAME + " - " + this.contactFile.getName());
             mainWindow.setCenter(contactsView);
         } catch(IOException e) {
             e.printStackTrace();
@@ -111,6 +105,26 @@ public class ContactsBookApp extends Application {
 
     public void setContactFile(File contactFile) {
         this.contactFile = contactFile;
+        setContactList();
+    }
+
+    public void setContactList() {
+
+        this.contactDAO = new ContactDAO(this.contactFile);
+        ObservableList<Person> contactList = contactDAO.read();
+
+        if(contactList != null)
+            this.contactList = contactList;
+        else
+            this.contactList = FXCollections.observableArrayList();
+    }
+
+    public ContactDAO getContactDAO() {
+        return contactDAO;
+    }
+
+    public ObservableList<Person> getContactList() {
+        return this.contactList;
     }
 
     public BorderPane getMainWindow() {

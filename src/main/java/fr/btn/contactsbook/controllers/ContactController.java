@@ -1,6 +1,7 @@
 package fr.btn.contactsbook.controllers;
 
 import fr.btn.contactsbook.ContactsBookApp;
+import fr.btn.contactsbook.dao.ContactDAO;
 import fr.btn.contactsbook.model.Person;
 import fr.btn.contactsbook.utils.DateUtil;
 import javafx.collections.FXCollections;
@@ -10,6 +11,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+
+import java.io.File;
 
 public class ContactController {
     @FXML
@@ -72,6 +75,7 @@ public class ContactController {
             return;
 
         contactsBookApp.showEditDialog("Edit Contact", selectedContact);
+        showContactDetail(selectedContact);
     }
 
     @FXML
@@ -81,12 +85,11 @@ public class ContactController {
 
         if(isOkClicked)
             contactList.add(newPerson);
+
+        showContactDetail(newPerson);
     }
 
     public void setContactList(ObservableList<Person> contactList) {
-        if(contactList == null)
-            this.contactList = FXCollections.observableArrayList();
-
         this.contactList = contactList;
         contactTable.setItems(this.contactList);
     }
@@ -94,6 +97,7 @@ public class ContactController {
     public void setContactsBookApp(ContactsBookApp contactsBookApp) {
         this.contactsBookApp = contactsBookApp;
     }
+
 
     private void enableButtons() {
         this.editBtn.setDisable(false);

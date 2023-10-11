@@ -80,7 +80,6 @@ public class ContactNewEditDialogController {
         if(person == null)
             return;
 
-
         this.contact = person;
 
         firstNameField.setText(person.getFirstname());
@@ -88,7 +87,9 @@ public class ContactNewEditDialogController {
         birthdayField.setText(DateUtil.format(person.getBirthday()));
         streetField.setText(person.getStreet());
         cityField.setText(person.getCity());
-        postalCodeField.setText(Integer.toString(person.getPostalCode()));
+
+        String postalCodeStr = person.getPostalCode() == 0 ? "" : Integer.toString(person.getPostalCode());
+        postalCodeField.setText(postalCodeStr);
     }
 
 }

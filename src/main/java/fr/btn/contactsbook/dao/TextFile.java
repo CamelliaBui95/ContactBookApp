@@ -1,6 +1,8 @@
 package fr.btn.contactsbook.dao;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,15 +10,7 @@ public class TextFile {
     private File file;
 
     public TextFile(File file) {
-        if(!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        this.file = file;
+        setTextFile(file);
     }
     public List<String> read() {
         List<String> texts = new ArrayList<>();
@@ -55,4 +49,31 @@ public class TextFile {
         writer.append(text);
         writer.newLine();
     }
+    public static File createFile(String pathName) {
+        if(!hasFile(pathName))
+            return new File(pathName);
+
+        return null;
+    }
+
+    private static boolean hasFile(String pathName) {
+        return Files.exists(Path.of(pathName));
+    }
+
+    public File getFile() {
+        return this.file;
+    }
+
+    public void setTextFile(File file) {
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        this.file = file;
+    }
+
 }

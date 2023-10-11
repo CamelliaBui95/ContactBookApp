@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ContactDAO {
@@ -22,13 +23,14 @@ public class ContactDAO {
 
         ObservableList<Person> contactList = FXCollections.observableArrayList();
         int i = 0;
-        while(i < contactList.size())
+        while(i < contactTexts.size())
             contactList.add(parse(contactTexts.get(i++)));
 
         return contactList;
     }
     private Person parse(String contactText) {
         String[] texts = contactText.split("\\|");
+
         Person newContact = new Person();
 
         newContact.setFirstname(texts[0]);
@@ -47,6 +49,8 @@ public class ContactDAO {
             contactTexts.add(toText(contacts.get(i)));
             i++;
         }
+        System.out.println(contactTexts);
+        textFile.writeAll(contactTexts);
     }
     private String toText(Person contact) {
         return contact.getFirstname() + "|" + contact.getLastname() + "|" + DateUtil.format(contact.getBirthday()) + "|" + contact.getStreet() + "|" + contact.getCity() + "|" + contact.getPostalCode();

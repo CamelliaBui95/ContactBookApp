@@ -19,10 +19,10 @@ public class Person {
         this.firstname.set(firstname);
         this.lastname.set(lastname);
 
-        this.street = new SimpleStringProperty("some street");
-        this.postalCode = new SimpleIntegerProperty(12345);
-        this.city = new SimpleStringProperty("some city");
-        this.birthday = new SimpleObjectProperty<LocalDate>(LocalDate.of(1999, 2, 21));
+        this.street = new SimpleStringProperty();
+        this.postalCode = new SimpleIntegerProperty();
+        this.city = new SimpleStringProperty();
+        this.birthday = new SimpleObjectProperty<LocalDate>();
     }
 
     public Person() {
