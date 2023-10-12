@@ -3,10 +3,9 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.btn.contactsbook.controllers.MenuController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.btn.contactsbook.controllers.FileMenuController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -14,8 +13,14 @@
             <items>
                   <MenuItem fx:id="newItem" mnemonicParsing="false" onAction="#handleNewFile" text="New" />
                   <MenuItem fx:id="openItem" mnemonicParsing="false" onAction="#handleOpenFile" text="Open" />
+                  <Menu fx:id="openRecent" mnemonicParsing="false" text="Recently Open">
+                    <items>
+                      <MenuItem mnemonicParsing="false" />
+                    </items>
+                  </Menu>
                   <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#handleSaveFile" text="Save" />
-                  <MenuItem fx:id="saveAsItem" mnemonicParsing="false" text="Save as..." />
+                  <MenuItem fx:id="saveAsItem" mnemonicParsing="false" onAction="#handleSaveFileAs" text="Save as..." />
+                  <MenuItem mnemonicParsing="false" text="Close" />
               <MenuItem fx:id="exitItem" mnemonicParsing="false" text="Exit" />
             </items>
           </Menu>
@@ -27,10 +32,4 @@
         </menus>
       </MenuBar>
    </top>
-   <left>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </left>
-   <right>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </right>
 </BorderPane>

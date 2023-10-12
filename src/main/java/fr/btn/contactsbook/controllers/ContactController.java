@@ -1,18 +1,14 @@
 package fr.btn.contactsbook.controllers;
 
 import fr.btn.contactsbook.ContactsBookApp;
-import fr.btn.contactsbook.dao.ContactDAO;
 import fr.btn.contactsbook.model.Person;
 import fr.btn.contactsbook.utils.DateUtil;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-
-import java.io.File;
 
 public class ContactController {
     @FXML

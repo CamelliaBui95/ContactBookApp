@@ -1,15 +1,19 @@
 package fr.btn.contactsbook;
 
+import fr.btn.contactsbook.components.AppMenu;
 import fr.btn.contactsbook.controllers.ContactController;
 import fr.btn.contactsbook.controllers.ContactNewEditDialogController;
-import fr.btn.contactsbook.controllers.MenuController;
-import fr.btn.contactsbook.dao.ContactDAO;
+import fr.btn.contactsbook.controllers.FileMenuController;
+import fr.btn.contactsbook.services.IOManager;
+import fr.btn.contactsbook.services.dao.ContactDAO;
 import fr.btn.contactsbook.model.Person;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -17,6 +21,9 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ContactsBookApp extends Application {
     private static final String APP_NAME = "Contact Book Application";
@@ -25,8 +32,14 @@ public class ContactsBookApp extends Application {
     private ObservableList<Person> contactList;
     private File contactFile;
     private ContactDAO contactDAO;
-    public ContactsBookApp() {
 
+    private IOManager ioManager;
+    public ContactsBookApp() {
+        contactDAO = new ContactDAO();
+
+        ioManager = IOManager.getInstance();
+        ioManager.setContactDAO(contactDAO);
+        ioManager.setApp(this);
     }
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -40,9 +53,10 @@ public class ContactsBookApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(ContactsBookApp.class.getResource("view/ContactsBook-View.fxml"));
+
             mainWindow = (BorderPane) loader.load();
 
-            MenuController controller = loader.getController();
+            FileMenuController controller = loader.getController();
             controller.setContactsBookApp(this);
 
             Scene scene = new Scene(mainWindow);
@@ -53,7 +67,6 @@ public class ContactsBookApp extends Application {
             e.printStackTrace();
         }
     }
-
     public void showContactsView() {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -105,28 +118,21 @@ public class ContactsBookApp extends Application {
 
     public void setContactFile(File contactFile) {
         this.contactFile = contactFile;
-        setContactList();
+        this.contactDAO.setTextFile(this.contactFile);
     }
-
     public void setContactList() {
-
-        this.contactDAO = new ContactDAO(this.contactFile);
         ObservableList<Person> contactList = contactDAO.read();
-
         if(contactList != null)
             this.contactList = contactList;
         else
             this.contactList = FXCollections.observableArrayList();
     }
-
     public ContactDAO getContactDAO() {
         return contactDAO;
     }
-
     public ObservableList<Person> getContactList() {
         return this.contactList;
     }
-
     public BorderPane getMainWindow() {
         return mainWindow;
     }

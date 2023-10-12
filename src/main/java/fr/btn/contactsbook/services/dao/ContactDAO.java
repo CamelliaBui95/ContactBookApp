@@ -1,4 +1,4 @@
-package fr.btn.contactsbook.dao;
+package fr.btn.contactsbook.services.dao;
 
 import fr.btn.contactsbook.model.Person;
 import fr.btn.contactsbook.utils.DateUtil;
@@ -7,14 +7,15 @@ import javafx.collections.ObservableList;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ContactDAO {
     private TextFile textFile;
-
     public ContactDAO(File file) {
         this.textFile = new TextFile(file);
+    }
+    public ContactDAO() {
+
     }
     public ObservableList<Person> read() {
         List<String> contactTexts = this.textFile.read();
@@ -49,10 +50,16 @@ public class ContactDAO {
             contactTexts.add(toText(contacts.get(i)));
             i++;
         }
-        System.out.println(contactTexts);
+
         textFile.writeAll(contactTexts);
     }
     private String toText(Person contact) {
+        StringBuilder text = new StringBuilder();
+        String separator = "\\|";
         return contact.getFirstname() + "|" + contact.getLastname() + "|" + DateUtil.format(contact.getBirthday()) + "|" + contact.getStreet() + "|" + contact.getCity() + "|" + contact.getPostalCode();
+    }
+
+    public void setTextFile(File file) {
+        this.textFile = new TextFile(file);
     }
 }

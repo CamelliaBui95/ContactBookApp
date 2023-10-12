@@ -1,4 +1,4 @@
-package fr.btn.contactsbook.dao;
+package fr.btn.contactsbook.services.dao;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -16,12 +16,13 @@ public class TextFile {
         List<String> texts = new ArrayList<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
-            String newLine = reader.readLine();
 
+            String newLine = reader.readLine();
             while(newLine != null) {
                 texts.add(newLine);
                 newLine = reader.readLine();
             }
+
             reader.close();
         } catch(IOException e) {
             e.printStackTrace();
@@ -77,3 +78,5 @@ public class TextFile {
     }
 
 }
+
+// new File("chemin/name");
