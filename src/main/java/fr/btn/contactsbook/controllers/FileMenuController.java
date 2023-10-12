@@ -38,13 +38,14 @@ public class FileMenuController {
         File selectedFile = ioManager.showOpenDialog();
         if(selectedFile == null) return;
 
-        savePath(selectedFile.getAbsolutePath());
-        setRecentPathsAsMenuItems();
+        updateRecentPaths(selectedFile);
         contactsBookApp.showContactsView();
     }
     @FXML
     private void handleNewFile() {
-        ioManager.createNewFile();
+        File newFile = ioManager.createNewFile();
+
+        updateRecentPaths(newFile);
         contactsBookApp.showContactsView();
     }
     @FXML
@@ -59,8 +60,7 @@ public class FileMenuController {
     private void openRecentFile(String path) {
         File recentFile = ioManager.createFileObj(path);
         ioManager.submitFile(recentFile);
-        savePath(recentFile.getAbsolutePath());
-        setRecentPathsAsMenuItems();
+        updateRecentPaths(recentFile);
         contactsBookApp.showContactsView();
     }
 
@@ -77,12 +77,16 @@ public class FileMenuController {
 
         openRecent.getItems().setAll(menuItems);
     }
-
     private void savePath(String path) {
         if(recentPaths.contains(path))
             recentPaths.remove(path);
 
         recentPaths.add(path);
+    }
+
+    private void updateRecentPaths(File file) {
+        savePath(file.getAbsolutePath());
+        setRecentPathsAsMenuItems();
     }
 
 }

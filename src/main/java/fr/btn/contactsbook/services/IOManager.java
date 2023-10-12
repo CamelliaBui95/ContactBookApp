@@ -23,11 +23,8 @@ public class IOManager {
     private FileChooser fileChooser;
     private static IOManager ioManager;
     private IOManager() {
-        if(!hasContactDir()) {
-            boolean hasDone = new File(DIR_PATH).mkdir();
-            System.out.println(DIR_PATH);
-            System.out.println(hasDone);
-        }
+        if(!hasContactDir())
+            new File(DIR_PATH).mkdir();
 
         fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("txt","*.txt"));
@@ -48,7 +45,7 @@ public class IOManager {
 
         return selectedFile;
     }
-    public void createNewFile() {
+    public File createNewFile() {
         File newFile = null;
         while(newFile == null) {
             String fileName = index == 0 ? ABSOLUTE_PATH + EXTENTION : ABSOLUTE_PATH + "(" + index + ")" + EXTENTION;
@@ -58,6 +55,8 @@ public class IOManager {
 
         contactsBookApp.setContactFile(newFile);
         contactsBookApp.setContactList();
+
+        return newFile;
     }
     public void saveFile() {
         this.contactDAO.save(this.contactsBookApp.getContactList());

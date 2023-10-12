@@ -137,6 +137,3 @@ public class ContactsBookApp extends Application {
         return mainWindow;
     }
 }
-
-//"C:/Users"
-//new File(path).mkdir()
