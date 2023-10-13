@@ -6,12 +6,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContactDAO {
     private TextFile textFile;
-    public ContactDAO(File file) {
+    public ContactDAO(File file) throws IOException {
         this.textFile = new TextFile(file);
     }
     public ContactDAO() {
@@ -29,6 +30,7 @@ public class ContactDAO {
 
         return contactList;
     }
+
     private Person parse(String contactText) {
         String[] texts = contactText.split("\\|");
 

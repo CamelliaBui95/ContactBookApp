@@ -50,16 +50,6 @@ public class TextFile {
         writer.append(text);
         writer.newLine();
     }
-    public static File createFile(String pathName) {
-        if(!hasFile(pathName))
-            return new File(pathName);
-
-        return null;
-    }
-
-    private static boolean hasFile(String pathName) {
-        return Files.exists(Path.of(pathName));
-    }
 
     public File getFile() {
         return this.file;
@@ -69,12 +59,11 @@ public class TextFile {
         if(!file.exists()) {
             try {
                 file.createNewFile();
+                this.file = file;
             } catch(IOException e) {
                 e.printStackTrace();
             }
         }
-
-        this.file = file;
     }
 
 }

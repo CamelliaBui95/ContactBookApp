@@ -5,6 +5,7 @@ import fr.btn.contactsbook.controllers.ContactController;
 import fr.btn.contactsbook.controllers.ContactNewEditDialogController;
 import fr.btn.contactsbook.controllers.FileMenuController;
 import fr.btn.contactsbook.services.IOManager;
+import fr.btn.contactsbook.services.RepositoryManager;
 import fr.btn.contactsbook.services.dao.ContactDAO;
 import fr.btn.contactsbook.model.Person;
 import javafx.application.Application;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ContactsBookApp extends Application {
+/*public class ContactsBookApp extends Application {
     private static final String APP_NAME = "Contact Book Application";
     private Stage primaryStage;
     private BorderPane mainWindow;
@@ -133,7 +134,95 @@ public class ContactsBookApp extends Application {
     public ObservableList<Person> getContactList() {
         return this.contactList;
     }
-    public BorderPane getMainWindow() {
-        return mainWindow;
+}*/
+public class ContactsBookApp extends Application {
+    private static final String APP_NAME = "Contact Book Application";
+    private Stage primaryStage;
+    private BorderPane mainWindow;
+    private RepositoryManager repositoryManager;
+    private IOManager ioManager;
+
+    public ContactsBookApp() {
+        repositoryManager = RepositoryManager.getInstance(this);
+        ioManager = IOManager.getInstance(this);
+
+        repositoryManager.setIoManager(ioManager);
+        ioManager.setRepositoryManager(repositoryManager);
     }
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle(APP_NAME);
+
+        initMainWindow();
+    }
+
+    public void initMainWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ContactsBookApp.class.getResource("view/ContactsBook-View.fxml"));
+
+            mainWindow = (BorderPane) loader.load();
+
+            FileMenuController controller = loader.getController();
+            controller.setContactsBookApp(this);
+            controller.setIoManager(ioManager);
+
+            Scene scene = new Scene(mainWindow);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void showContactsView() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ContactsBookApp.class.getResource("view/Contacts-View.fxml"));
+            AnchorPane contactsView = (AnchorPane) loader.load();
+            ContactController controller = loader.getController();
+
+            controller.setContactsBookApp(this);
+            controller.setContactList(repositoryManager.getContactList());
+
+            this.primaryStage.setTitle(APP_NAME + " - " + ioManager.getContactFile().getName());
+            mainWindow.setCenter(contactsView);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean showEditDialog(String dialogTitle, Person person) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ContactsBookApp.class.getResource("view/ContactNewEditDialog-View.fxml"));
+            AnchorPane dialogBox = loader.load();
+            ContactNewEditDialogController controller = loader.getController();
+
+            Scene scene = new Scene(dialogBox);
+            Stage dialogStage = new Stage();
+
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+
+            dialogStage.setTitle(dialogTitle);
+            dialogStage.setScene(scene);
+
+            controller.setDialogStage(dialogStage);
+            controller.setContact(person);
+
+            dialogStage.showAndWait();
+
+            return controller.isOkClicked();
+
+        } catch(IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
 }

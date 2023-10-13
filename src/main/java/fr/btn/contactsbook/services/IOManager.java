@@ -9,86 +9,114 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class IOManager {
-    private final String HOME = System.getProperty("user.home");
-    private final String DIR_PATH = "/contactBookApp";
-    private final String FILE_NAME = "contacts";
-    private final String EXTENTION = ".txt";
-    private final String ABSOLUTE_PATH = DIR_PATH + "/" + FILE_NAME;
+    //private final String HOME = System.getProperty("user.home");
+    private final String CONTACT_DIR_PATH = "/contactBookApp";
+    private final String RECENT_DIR_PATH = "/recentPaths";
+    private final String CONTACT_FILE_NAME = "myContacts";
+    private final String RECENT_FILE_NAME = "recentlyOpen";
+    private final String EXTENSION = ".txt";
+    public final String CONTACT_ABSOLUTE_PATH = CONTACT_DIR_PATH + "/" + CONTACT_FILE_NAME;
+    public final String RECENT_OPEN_ABSOLUTE_PATH = RECENT_DIR_PATH + "/" + RECENT_FILE_NAME + EXTENSION;
     private int index = 0;
-    private ContactsBookApp contactsBookApp;
+    private RepositoryManager repositoryManager;
     private ContactDAO contactDAO;
     private Stage window;
     private FileChooser fileChooser;
+    private File contactFile;
+    private File recentPathsFile;
     private static IOManager ioManager;
-    private IOManager() {
-        if(!hasContactDir())
-            new File(DIR_PATH).mkdir();
+    private IOManager(ContactsBookApp contactsBookApp) {
+        if(!hasDir(CONTACT_DIR_PATH))
+            new File(CONTACT_DIR_PATH).mkdir();
+
+        if(!hasDir(RECENT_DIR_PATH))
+            new File(RECENT_DIR_PATH).mkdir();
 
         fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("txt","*.txt"));
-        fileChooser.setInitialDirectory(new File(DIR_PATH));
+        fileChooser.setInitialDirectory(new File(CONTACT_DIR_PATH));
+
+        this.contactDAO = new ContactDAO();
+        this.window = contactsBookApp.getPrimaryStage();
     }
-    public static IOManager getInstance() {
+    public static IOManager getInstance(ContactsBookApp contactsBookApp) {
         if(ioManager == null)
-            ioManager = new IOManager();
+            ioManager = new IOManager(contactsBookApp);
         return ioManager;
     }
+
     public File showOpenDialog() {
         File selectedFile = fileChooser.showOpenDialog(this.window);
         if(selectedFile == null)
             return null;
 
-        contactsBookApp.setContactFile(selectedFile);
-        contactsBookApp.setContactList();
+        this.contactFile = selectedFile;
+        contactDAO.setTextFile(selectedFile);
+        repositoryManager.setContactList(contactDAO.read());
 
         return selectedFile;
     }
     public File createNewFile() {
         File newFile = null;
         while(newFile == null) {
-            String fileName = index == 0 ? ABSOLUTE_PATH + EXTENTION : ABSOLUTE_PATH + "(" + index + ")" + EXTENTION;
-            newFile = TextFile.createFile(fileName);
+            String fileName = index == 0 ? CONTACT_ABSOLUTE_PATH + EXTENSION : CONTACT_ABSOLUTE_PATH + "(" + index + ")" + EXTENSION;
+            newFile = createFile(fileName);
             index++;
         }
 
-        contactsBookApp.setContactFile(newFile);
-        contactsBookApp.setContactList();
-
+        this.contactFile = newFile;
+        contactDAO.setTextFile(newFile);
+        repositoryManager.setContactList(contactDAO.read());
         return newFile;
     }
-    public void saveFile() {
-        this.contactDAO.save(this.contactsBookApp.getContactList());
+    public void saveContactFile() {
+        contactDAO.save(repositoryManager.getContactList());
     }
-    public void saveFileAs() {
-        File savedFile = fileChooser.showSaveDialog(this.window);
-        if(savedFile == null)
-            return;
+    public File saveFileAs() {
+        return fileChooser.showSaveDialog(this.window);
+    }
+    public File saveContactFileAs() {
+        File savedFile = saveFileAs();
+        if(savedFile == null) return null;
 
-        this.contactDAO.setTextFile(savedFile);
-        saveFile();
+        this.contactFile = savedFile;
+        contactDAO.setTextFile(savedFile);
+        contactDAO.save(repositoryManager.getContactList());
+
+        return savedFile;
     }
-    public void setContactDAO(ContactDAO contactDAO) {
-        this.contactDAO = contactDAO;
+    private boolean hasDir(String dirPath) {
+        return Files.exists(Path.of(dirPath));
     }
-    public void setApp(ContactsBookApp contactsBookApp) {
-        this.contactsBookApp = contactsBookApp;
-        this.window = contactsBookApp.getPrimaryStage();
+
+    public void submitFile(File file) {
+        this.contactFile = file;
+        contactDAO.setTextFile(file);
+        repositoryManager.setContactList(contactDAO.read());
     }
-    private boolean hasContactDir() {
-        return Files.exists(Path.of(DIR_PATH));
+    public File createFile(String pathName) {
+        if(!hasFile(pathName))
+            return new File(pathName);
+
+        return null;
     }
     private static boolean hasFile(String pathName) {
         return Files.exists(Path.of(pathName));
     }
-    public File createFileObj(String pathName) {
-        return new File(pathName);
+
+    public File getContactFile() {
+        return contactFile;
     }
 
-    public void submitFile(File file) {
-        contactsBookApp.setContactFile(file);
-        contactsBookApp.setContactList();
+    public void setRepositoryManager(RepositoryManager repositoryManager) {
+        this.repositoryManager = repositoryManager;
     }
 
 }
+
+/*
+
+* */

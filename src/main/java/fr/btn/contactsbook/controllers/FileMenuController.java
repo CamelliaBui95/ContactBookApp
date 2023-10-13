@@ -28,7 +28,7 @@ public class FileMenuController {
     private Menu openRecent;
     private List<String> recentPaths = new ArrayList<>();
     public FileMenuController() {
-        ioManager = IOManager.getInstance();
+
     }
     public void setContactsBookApp(ContactsBookApp contactsBookApp) {
         this.contactsBookApp = contactsBookApp;
@@ -50,15 +50,18 @@ public class FileMenuController {
     }
     @FXML
     private void handleSaveFile() {
-        ioManager.saveFile();
+        ioManager.saveContactFile();
     }
     @FXML
     private void handleSaveFileAs() {
-        ioManager.saveFileAs();
+        File savedFile = ioManager.saveContactFileAs();
+        if(savedFile == null) return;
+
+        contactsBookApp.showContactsView();
     }
     @FXML
     private void openRecentFile(String path) {
-        File recentFile = ioManager.createFileObj(path);
+        File recentFile = ioManager.createFile(path);
         ioManager.submitFile(recentFile);
         updateRecentPaths(recentFile);
         contactsBookApp.showContactsView();
@@ -83,10 +86,13 @@ public class FileMenuController {
 
         recentPaths.add(path);
     }
-
     private void updateRecentPaths(File file) {
         savePath(file.getAbsolutePath());
         setRecentPathsAsMenuItems();
+    }
+
+    public void setIoManager(IOManager ioManager) {
+        this.ioManager = ioManager;
     }
 
 }
