@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ContactDAO {
     private TextFile textFile;
-    public ContactDAO(File file) throws IOException {
+    public ContactDAO(File file) {
         this.textFile = new TextFile(file);
     }
     public ContactDAO() {

@@ -1,30 +1,25 @@
 package fr.btn.contactsbook;
 
-import fr.btn.contactsbook.components.AppMenu;
 import fr.btn.contactsbook.controllers.ContactController;
 import fr.btn.contactsbook.controllers.ContactNewEditDialogController;
 import fr.btn.contactsbook.controllers.FileMenuController;
 import fr.btn.contactsbook.services.IOManager;
 import fr.btn.contactsbook.services.RepositoryManager;
-import fr.btn.contactsbook.services.dao.ContactDAO;
 import fr.btn.contactsbook.model.Person;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Optional;
 
 /*public class ContactsBookApp extends Application {
     private static final String APP_NAME = "Contact Book Application";
@@ -140,6 +135,7 @@ public class ContactsBookApp extends Application {
     private Stage primaryStage;
     private BorderPane mainWindow;
     private RepositoryManager repositoryManager;
+    private FileMenuController fileMenuController;
     private IOManager ioManager;
 
     public ContactsBookApp() {
@@ -147,6 +143,8 @@ public class ContactsBookApp extends Application {
         ioManager = IOManager.getInstance(this);
 
         repositoryManager.setIoManager(ioManager);
+        repositoryManager.setUpRepository();
+
         ioManager.setRepositoryManager(repositoryManager);
     }
     @Override
@@ -167,6 +165,8 @@ public class ContactsBookApp extends Application {
             FileMenuController controller = loader.getController();
             controller.setContactsBookApp(this);
             controller.setIoManager(ioManager);
+            controller.setRepositoryManager(repositoryManager);
+            fileMenuController = controller;
 
             Scene scene = new Scene(mainWindow);
             primaryStage.setScene(scene);
@@ -184,7 +184,8 @@ public class ContactsBookApp extends Application {
             ContactController controller = loader.getController();
 
             controller.setContactsBookApp(this);
-            controller.setContactList(repositoryManager.getContactList());
+            controller.setRepositoryManager(this.repositoryManager);
+            controller.setFileMenuController(fileMenuController);
 
             this.primaryStage.setTitle(APP_NAME + " - " + ioManager.getContactFile().getName());
             mainWindow.setCenter(contactsView);
@@ -192,6 +193,12 @@ public class ContactsBookApp extends Application {
             e.printStackTrace();
         }
     }
+
+    public void closeContactView() {
+        this.primaryStage.setTitle(APP_NAME);
+        mainWindow.setCenter(null);
+    }
+
 
     public boolean showEditDialog(String dialogTitle, Person person) {
         try {
@@ -221,8 +228,26 @@ public class ContactsBookApp extends Application {
             return false;
         }
     }
+
+    public void showAlertDialogOnClose(String header) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation On Saving Data");
+        alert.setHeaderText(header);
+        alert.setContentText("Do you want to save all contact data before closing ?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if(result.isPresent() && result.get() == ButtonType.OK)
+            ioManager.saveAll();
+
+    }
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
+    @FXML
+    public void stop() {
+        if(!this.fileMenuController.isSaved())
+            showAlertDialogOnClose("You are closing application.");
+    }
 }

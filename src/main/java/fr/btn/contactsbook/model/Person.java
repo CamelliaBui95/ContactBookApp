@@ -100,4 +100,16 @@ public class Person {
     public void setPostalCode(String postalCode) {
         this.postalCode.set(Integer.parseInt(postalCode));
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "firstname=" + firstname +
+                ", lastname=" + lastname +
+                ", birthday=" + birthday +
+                ", street=" + street +
+                ", city=" + city +
+                ", postalCode=" + postalCode +
+                '}';
+    }
 }

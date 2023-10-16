@@ -59,11 +59,12 @@ public class TextFile {
         if(!file.exists()) {
             try {
                 file.createNewFile();
-                this.file = file;
             } catch(IOException e) {
                 e.printStackTrace();
             }
         }
+
+        this.file = file;
     }
 
 }

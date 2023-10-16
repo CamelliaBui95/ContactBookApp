@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 public class IOManager {
@@ -26,7 +27,6 @@ public class IOManager {
     private Stage window;
     private FileChooser fileChooser;
     private File contactFile;
-    private File recentPathsFile;
     private static IOManager ioManager;
     private IOManager(ContactsBookApp contactsBookApp) {
         if(!hasDir(CONTACT_DIR_PATH))
@@ -50,6 +50,7 @@ public class IOManager {
 
     public File showOpenDialog() {
         File selectedFile = fileChooser.showOpenDialog(this.window);
+
         if(selectedFile == null)
             return null;
 
@@ -59,7 +60,7 @@ public class IOManager {
 
         return selectedFile;
     }
-    public File createNewFile() {
+    public File createNewContactFile() {
         File newFile = null;
         while(newFile == null) {
             String fileName = index == 0 ? CONTACT_ABSOLUTE_PATH + EXTENSION : CONTACT_ABSOLUTE_PATH + "(" + index + ")" + EXTENSION;
@@ -73,7 +74,7 @@ public class IOManager {
         return newFile;
     }
     public void saveContactFile() {
-        contactDAO.save(repositoryManager.getContactList());
+        contactDAO.save(repositoryManager.getSortedContactList());
     }
     public File saveFileAs() {
         return fileChooser.showSaveDialog(this.window);
@@ -84,7 +85,7 @@ public class IOManager {
 
         this.contactFile = savedFile;
         contactDAO.setTextFile(savedFile);
-        contactDAO.save(repositoryManager.getContactList());
+        contactDAO.save(repositoryManager.getSortedContactList());
 
         return savedFile;
     }
@@ -103,6 +104,17 @@ public class IOManager {
 
         return null;
     }
+
+    public File getFile(String pathName) {
+        return new File(pathName);
+    }
+    public List<String> read(String path) {
+        return new TextFile(new File(path)).read();
+    }
+    public void saveStrData(String fileName, List<String> data) {
+        TextFile textFile = new TextFile(new File(fileName));
+        textFile.writeAll(data);
+    }
     private static boolean hasFile(String pathName) {
         return Files.exists(Path.of(pathName));
     }
@@ -115,8 +127,9 @@ public class IOManager {
         this.repositoryManager = repositoryManager;
     }
 
+    public void saveAll() {
+        saveContactFile();
+        saveStrData(RECENT_OPEN_ABSOLUTE_PATH, repositoryManager.getRecentFilePaths());
+    }
+
 }
-
-/*
-
-* */

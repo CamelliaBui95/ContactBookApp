@@ -5,7 +5,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.btn.contactsbook.controllers.FileMenuController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.btn.contactsbook.controllers.FileMenuController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -20,7 +20,7 @@
                   </Menu>
                   <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#handleSaveFile" text="Save" />
                   <MenuItem fx:id="saveAsItem" mnemonicParsing="false" onAction="#handleSaveFileAs" text="Save as..." />
-                  <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem fx:id="closeItem" mnemonicParsing="false" onAction="#handleOnClose" text="Close" />
               <MenuItem fx:id="exitItem" mnemonicParsing="false" text="Exit" />
             </items>
           </Menu>

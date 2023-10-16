@@ -2,13 +2,12 @@ package fr.btn.contactsbook.controllers;
 
 import fr.btn.contactsbook.ContactsBookApp;
 import fr.btn.contactsbook.model.Person;
+import fr.btn.contactsbook.services.RepositoryManager;
 import fr.btn.contactsbook.utils.DateUtil;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 
 public class ContactController {
     @FXML
@@ -31,10 +30,14 @@ public class ContactController {
     private Label postalCodeLabel;
     private ObservableList<Person> contactList;
     private ContactsBookApp contactsBookApp;
+    private RepositoryManager repositoryManager;
     @FXML
     private Button editBtn;
     @FXML
     private Button deleteBtn;
+    @FXML
+    private TextField searchField;
+    private FileMenuController fileMenuController;
     @FXML
     private void initialize() {
         this.firstNameCol.setCellValueFactory(cell -> cell.getValue().firstnameProperty());
@@ -44,6 +47,8 @@ public class ContactController {
 
         contactTable.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> showContactDetail(n));
         contactTable.getSelectionModel().selectedItemProperty().addListener((ob, o, n) -> enableButtons());
+
+        searchField.textProperty().addListener((ob, o, n) -> repositoryManager.setFilerPredicate(n));
     }
     private void showContactDetail(Person person) {
         if(person == null)
@@ -72,6 +77,7 @@ public class ContactController {
 
         contactsBookApp.showEditDialog("Edit Contact", selectedContact);
         showContactDetail(selectedContact);
+        fileMenuController.toggleSave();
     }
 
     @FXML
@@ -79,21 +85,13 @@ public class ContactController {
         Person newPerson = new Person();
         boolean isOkClicked = contactsBookApp.showEditDialog("New Contact", newPerson);
 
-        if(isOkClicked)
+        if(isOkClicked) {
             contactList.add(newPerson);
+            fileMenuController.toggleSave();
+        }
 
         showContactDetail(newPerson);
     }
-
-    public void setContactList(ObservableList<Person> contactList) {
-        this.contactList = contactList;
-        contactTable.setItems(this.contactList);
-    }
-
-    public void setContactsBookApp(ContactsBookApp contactsBookApp) {
-        this.contactsBookApp = contactsBookApp;
-    }
-
 
     private void enableButtons() {
         this.editBtn.setDisable(false);
@@ -103,6 +101,27 @@ public class ContactController {
     private void disableButtons() {
         this.editBtn.setDisable(true);
         this.deleteBtn.setDisable(true);
+    }
+
+    public void setContactList(ObservableList<Person> contactList) {
+        this.contactList = contactList;
+    }
+
+    public void setContactsBookApp(ContactsBookApp contactsBookApp) {
+        this.contactsBookApp = contactsBookApp;
+    }
+
+    public void setRepositoryManager(RepositoryManager repositoryManager) {
+        this.repositoryManager = repositoryManager;
+        setContactList(this.repositoryManager.getContactList());
+
+        SortedList<Person> sortedList = this.repositoryManager.getSortedContactList();
+        sortedList.comparatorProperty().bind(contactTable.comparatorProperty());
+        contactTable.setItems(sortedList);
+    }
+
+    public void setFileMenuController(FileMenuController fileMenuController) {
+        this.fileMenuController = fileMenuController;
     }
 
 }
