@@ -1,5 +1,6 @@
 package fr.btn.contactsbook.model;
 
+import fr.btn.contactsbook.utils.DateUtil;
 import javafx.beans.property.*;
 
 import java.time.LocalDate;
@@ -19,10 +20,10 @@ public class Person {
         this.firstname.set(firstname);
         this.lastname.set(lastname);
 
-        this.street = new SimpleStringProperty();
-        this.postalCode = new SimpleIntegerProperty();
-        this.city = new SimpleStringProperty();
-        this.birthday = new SimpleObjectProperty<LocalDate>();
+        this.street = new SimpleStringProperty("Some Street");
+        this.postalCode = new SimpleIntegerProperty(123456);
+        this.city = new SimpleStringProperty("Some City");
+        this.birthday = new SimpleObjectProperty<LocalDate>(DateUtil.parse("01.01.1999"));
     }
 
     public Person() {

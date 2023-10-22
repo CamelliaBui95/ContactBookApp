@@ -20,7 +20,7 @@ public class IOManager {
     private final String RECENT_FILE_NAME = "recentlyOpen";
     private final String EXTENSION = ".txt";
     public final String CONTACT_ABSOLUTE_PATH = CONTACT_DIR_PATH + "/" + CONTACT_FILE_NAME;
-    public final String RECENT_OPEN_ABSOLUTE_PATH = RECENT_DIR_PATH + "/" + RECENT_FILE_NAME + EXTENSION;
+    public final String RECENT_OPEN_ABSOLUTE_PATH = CONTACT_DIR_PATH + RECENT_DIR_PATH + "/" + RECENT_FILE_NAME + EXTENSION;
     private int index = 0;
     private RepositoryManager repositoryManager;
     private ContactDAO contactDAO;
@@ -56,7 +56,7 @@ public class IOManager {
 
         this.contactFile = selectedFile;
         contactDAO.setTextFile(selectedFile);
-        repositoryManager.setContactList(contactDAO.read());
+        repositoryManager.addContacts(contactDAO.read());
 
         return selectedFile;
     }
@@ -70,7 +70,7 @@ public class IOManager {
 
         this.contactFile = newFile;
         contactDAO.setTextFile(newFile);
-        repositoryManager.setContactList(contactDAO.read());
+        repositoryManager.addContacts(contactDAO.read());
         return newFile;
     }
     public void saveContactFile() {
@@ -96,7 +96,7 @@ public class IOManager {
     public void submitFile(File file) {
         this.contactFile = file;
         contactDAO.setTextFile(file);
-        repositoryManager.setContactList(contactDAO.read());
+        repositoryManager.addContacts(contactDAO.read());
     }
     public File createFile(String pathName) {
         if(!hasFile(pathName))
@@ -131,5 +131,4 @@ public class IOManager {
         saveContactFile();
         saveStrData(RECENT_OPEN_ABSOLUTE_PATH, repositoryManager.getRecentFilePaths());
     }
-
 }

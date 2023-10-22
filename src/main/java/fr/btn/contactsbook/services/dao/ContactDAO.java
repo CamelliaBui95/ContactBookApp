@@ -6,12 +6,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContactDAO {
     private TextFile textFile;
+    private final String SEPARATOR = "|";
     public ContactDAO(File file) {
         this.textFile = new TextFile(file);
     }
@@ -20,8 +20,6 @@ public class ContactDAO {
     }
     public ObservableList<Person> read() {
         List<String> contactTexts = this.textFile.read();
-        if(contactTexts.isEmpty())
-            return null;
 
         ObservableList<Person> contactList = FXCollections.observableArrayList();
         int i = 0;
@@ -32,7 +30,7 @@ public class ContactDAO {
     }
 
     private Person parse(String contactText) {
-        String[] texts = contactText.split("\\|");
+        String[] texts = contactText.split("\\" + SEPARATOR);
 
         Person newContact = new Person();
 
@@ -57,8 +55,19 @@ public class ContactDAO {
     }
     private String toText(Person contact) {
         StringBuilder text = new StringBuilder();
-        String separator = "\\|";
-        return contact.getFirstname() + "|" + contact.getLastname() + "|" + DateUtil.format(contact.getBirthday()) + "|" + contact.getStreet() + "|" + contact.getCity() + "|" + contact.getPostalCode();
+
+        text.append(contact.getFirstname());
+        text.append(SEPARATOR);
+        text.append(contact.getLastname());
+        text.append(SEPARATOR);
+        text.append(DateUtil.format(contact.getBirthday()));
+        text.append(SEPARATOR);
+        text.append(contact.getStreet());
+        text.append(SEPARATOR);
+        text.append(contact.getCity());
+        text.append(SEPARATOR);
+        text.append(contact.getPostalCode());
+        return text.toString();
     }
 
     public void setTextFile(File file) {

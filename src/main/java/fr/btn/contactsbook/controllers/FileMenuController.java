@@ -26,7 +26,7 @@ public class FileMenuController {
     @FXML
     private MenuItem exitItem;
     @FXML
-    private Menu openRecent;
+    private Menu openRecentItem;
     @FXML
     private MenuItem closeItem;
     private boolean isSaved = true;
@@ -37,33 +37,31 @@ public class FileMenuController {
 
     @FXML
     private void initialize() {
-        saveItem.setDisable(isSaved);
-        saveAsItem.setDisable(isSaved);
+        toggleOffSave();
     }
 
-    public void setContactsBookApp(ContactsBookApp contactsBookApp) {
-        this.contactsBookApp = contactsBookApp;
-    }
+
     @FXML
     private void handleOpenFile() {
         File selectedFile = ioManager.showOpenDialog();
         if(selectedFile == null) return;
 
+        toggleOffSave();
         updateRecentPaths(selectedFile);
-        contactsBookApp.showContactsView();
+        contactsBookApp.showContactView();
     }
     @FXML
     private void handleNewFile() {
         File newFile = ioManager.createNewContactFile();
 
         updateRecentPaths(newFile);
-        contactsBookApp.showContactsView();
-        toggleSave();
+        contactsBookApp.showContactView();
+        toggleOnSave();
     }
     @FXML
     private void handleSaveFile() {
         ioManager.saveContactFile();
-        toggleSave();
+        toggleOffSave();
     }
     @FXML
     private void handleSaveFileAs() {
@@ -71,23 +69,37 @@ public class FileMenuController {
         if(savedFile == null) return;
 
         ioManager.submitFile(savedFile);
-        contactsBookApp.showContactsView();
+        contactsBookApp.showContactView();
         updateRecentPaths(savedFile);
     }
     @FXML
     private void openRecentFile(String path) {
         File recentFile = ioManager.getFile(path);
         ioManager.submitFile(recentFile);
-        contactsBookApp.showContactsView();
+        contactsBookApp.showContactView();
         updateRecentPaths(recentFile);
     }
+
+    @FXML
+    public void handleOnClose() {
+        if(!this.isSaved)
+            contactsBookApp.showAlertDialogOnClose("You are closing this contact sheet.");
+        contactsBookApp.closeContactView();
+        toggleOffSave();
+    }
+
+    @FXML
+    public void handleOnExit() {
+        contactsBookApp.stop();
+    }
+
     private void setRecentPathsAsMenuItems() {
         if(repositoryManager.getRecentFilePaths().isEmpty()) {
-            openRecent.setDisable(true);
+            openRecentItem.setDisable(true);
             return;
         }
 
-        openRecent.setDisable(false);
+        openRecentItem.setDisable(false);
         List<MenuItem> menuItems = new ArrayList<>();
         int i = repositoryManager.getRecentFilePaths().size() - 1;
 
@@ -98,7 +110,7 @@ public class FileMenuController {
             menuItems.add(menuItem);
         }
 
-        openRecent.getItems().setAll(menuItems);
+        openRecentItem.getItems().setAll(menuItems);
     }
 
     private void updateRecentPaths(File file) {
@@ -106,16 +118,17 @@ public class FileMenuController {
         setRecentPathsAsMenuItems();
     }
 
-    @FXML
-    public void handleOnClose() {
-        if(!this.isSaved)
-            contactsBookApp.showAlertDialogOnClose("You are closing this contact sheet.");
-        contactsBookApp.closeContactView();
-        toggleSave();
+
+
+    public void toggleOffSave() {
+        this.isSaved = true;
+
+        saveItem.setDisable(isSaved);
+        saveAsItem.setDisable(isSaved);
     }
 
-    public void toggleSave() {
-        this.isSaved = !isSaved;
+    public void toggleOnSave() {
+        this.isSaved = false;
 
         saveItem.setDisable(isSaved);
         saveAsItem.setDisable(isSaved);
@@ -132,7 +145,10 @@ public class FileMenuController {
     public void setRepositoryManager(RepositoryManager repositoryManager) {
         this.repositoryManager = repositoryManager;
         setRecentPathsAsMenuItems();
+    }
 
+    public void setContactsBookApp(ContactsBookApp contactsBookApp) {
+        this.contactsBookApp = contactsBookApp;
     }
 
 }

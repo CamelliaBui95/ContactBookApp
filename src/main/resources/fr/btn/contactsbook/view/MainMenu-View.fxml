@@ -13,7 +13,7 @@
             <items>
                   <MenuItem fx:id="newItem" mnemonicParsing="false" onAction="#handleNewFile" text="New" />
                   <MenuItem fx:id="openItem" mnemonicParsing="false" onAction="#handleOpenFile" text="Open" />
-                  <Menu fx:id="openRecent" mnemonicParsing="false" text="Recently Open">
+                  <Menu fx:id="openRecentItem" mnemonicParsing="false" text="Recently Open">
                     <items>
                       <MenuItem mnemonicParsing="false" />
                     </items>
@@ -21,7 +21,7 @@
                   <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#handleSaveFile" text="Save" />
                   <MenuItem fx:id="saveAsItem" mnemonicParsing="false" onAction="#handleSaveFileAs" text="Save as..." />
                   <MenuItem fx:id="closeItem" mnemonicParsing="false" onAction="#handleOnClose" text="Close" />
-              <MenuItem fx:id="exitItem" mnemonicParsing="false" text="Exit" />
+              <MenuItem fx:id="exitItem" mnemonicParsing="false" onAction="#handleOnExit" text="Exit" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

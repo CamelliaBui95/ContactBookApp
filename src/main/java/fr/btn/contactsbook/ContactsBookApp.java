@@ -1,13 +1,12 @@
 package fr.btn.contactsbook;
 
 import fr.btn.contactsbook.controllers.ContactController;
-import fr.btn.contactsbook.controllers.ContactNewEditDialogController;
 import fr.btn.contactsbook.controllers.FileMenuController;
+import fr.btn.contactsbook.controllers.ContactNewEditDialogController;
 import fr.btn.contactsbook.services.IOManager;
 import fr.btn.contactsbook.services.RepositoryManager;
 import fr.btn.contactsbook.model.Person;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -48,7 +47,7 @@ import java.util.Optional;
     public void initMainWindow() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(ContactsBookApp.class.getResource("view/ContactsBook-View.fxml"));
+            loader.setLocation(ContactsBookApp.class.getResource("view/MainMenu-View.fxml"));
 
             mainWindow = (BorderPane) loader.load();
 
@@ -133,62 +132,59 @@ import java.util.Optional;
 public class ContactsBookApp extends Application {
     private static final String APP_NAME = "Contact Book Application";
     private Stage primaryStage;
-    private BorderPane mainWindow;
-    private RepositoryManager repositoryManager;
+    private BorderPane mainMenu;
+
     private FileMenuController fileMenuController;
+    private RepositoryManager repositoryManager;
+
     private IOManager ioManager;
 
     public ContactsBookApp() {
-        repositoryManager = RepositoryManager.getInstance(this);
-        ioManager = IOManager.getInstance(this);
+       ioManager = IOManager.getInstance(this);
+       repositoryManager = RepositoryManager.getInstance();
+       repositoryManager.setIoManager(ioManager);
+       repositoryManager.setUpRepository();
+       ioManager.setRepositoryManager(repositoryManager);
 
-        repositoryManager.setIoManager(ioManager);
-        repositoryManager.setUpRepository();
-
-        ioManager.setRepositoryManager(repositoryManager);
     }
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle(APP_NAME);
 
-        initMainWindow();
+        initMainMenu();
     }
 
-    public void initMainWindow() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(ContactsBookApp.class.getResource("view/ContactsBook-View.fxml"));
+    public void initMainMenu() {
+       try {
+           FXMLLoader loader = new FXMLLoader(getClass().getResource("view/MainMenu-View.fxml"));
+           mainMenu = loader.load();
+           FileMenuController controller = loader.getController();
+           controller.setContactsBookApp(this);
+           controller.setRepositoryManager(repositoryManager);
+           controller.setIoManager(ioManager);
+           fileMenuController = controller;
+           primaryStage.setScene(new Scene(mainMenu));
+           primaryStage.show();
+       } catch(IOException e) {
+           e.printStackTrace();
+       }
 
-            mainWindow = (BorderPane) loader.load();
-
-            FileMenuController controller = loader.getController();
-            controller.setContactsBookApp(this);
-            controller.setIoManager(ioManager);
-            controller.setRepositoryManager(repositoryManager);
-            fileMenuController = controller;
-
-            Scene scene = new Scene(mainWindow);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
     }
-    public void showContactsView() {
+
+    public void showContactView() {
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(ContactsBookApp.class.getResource("view/Contacts-View.fxml"));
-            AnchorPane contactsView = (AnchorPane) loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("view/Contacts-View.fxml"));
+            AnchorPane contactsView = loader.load();
+
             ContactController controller = loader.getController();
-
             controller.setContactsBookApp(this);
-            controller.setRepositoryManager(this.repositoryManager);
             controller.setFileMenuController(fileMenuController);
+            controller.setRepositoryManager(repositoryManager);
 
-            this.primaryStage.setTitle(APP_NAME + " - " + ioManager.getContactFile().getName());
-            mainWindow.setCenter(contactsView);
+            mainMenu.setCenter(contactsView);
+            primaryStage.setTitle(APP_NAME + " - " + ioManager.getContactFile().getName());
+
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -196,7 +192,7 @@ public class ContactsBookApp extends Application {
 
     public void closeContactView() {
         this.primaryStage.setTitle(APP_NAME);
-        mainWindow.setCenter(null);
+        mainMenu.setCenter(null);
     }
 
 
@@ -239,7 +235,6 @@ public class ContactsBookApp extends Application {
 
         if(result.isPresent() && result.get() == ButtonType.OK)
             ioManager.saveAll();
-
     }
     public Stage getPrimaryStage() {
         return primaryStage;
@@ -250,4 +245,5 @@ public class ContactsBookApp extends Application {
         if(!this.fileMenuController.isSaved())
             showAlertDialogOnClose("You are closing application.");
     }
+
 }
